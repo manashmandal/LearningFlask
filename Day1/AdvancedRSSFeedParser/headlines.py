@@ -12,7 +12,9 @@ app = Flask(__name__)
 
 DEFAULTS = {
     'publication' : 'bbc',
-    'city' : 'London,UK'
+    'city' : 'Khulna,Bangladesh',
+    'currency_from' : 'BDT',
+    'currency_to' : 'USD'
 }
 
 RSS_FEEDS = {
@@ -35,7 +37,19 @@ def home():
 
     weather = get_weather(city)
 
-    return render_template("home.html", articles=articles, weather=weather)
+    currency_from = request.args.get('currency_from')
+
+    if not currency_from:
+        currency_from = DEFAULTS['currency_from']
+
+    currency_to = request.args.get('currency_to')
+
+    if not currency_to:
+        currency_to = DEFAULTS['currency_to']
+
+    rate = get_rate(currency_from, currency_to)
+
+    return render_template("home.html", articles=articles, weather=weather, currency_from=currency_from, currency_to=currency_to, rate=rate)
 
 @app.route("/", methods=['GET', 'POST'])
 def get_news():
@@ -57,7 +71,7 @@ def get_news(query):
         publication = query.lower()
 
     feed = feedparser.parse(RSS_FEEDS[publication])
-    
+
     return feed['entries']
 
 
@@ -69,13 +83,21 @@ def get_weather(query):
         weather = {
             "description": data['weather'][0]['description'],
             "temperature": data['main']['temp'],
-            "city": data['name']
+            "city": data['name'],
+            "country" : data['sys']['country']
         }
 
     except json.decoder.JSONDecodeError:
         weather = None
 
     return weather
+
+
+def get_rate(frm, to):
+    all_currency = requests.get(keys.CURRENCY_URL).json()['rates']
+    frm_rate = all_currency[frm.upper()]
+    to_rate = all_currency[to.upper()]
+    return to_rate / frm_rate
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True)
