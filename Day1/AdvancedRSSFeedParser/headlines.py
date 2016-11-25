@@ -47,9 +47,9 @@ def home():
     if not currency_to:
         currency_to = DEFAULTS['currency_to']
 
-    rate = get_rate(currency_from, currency_to)
+    rate, currencies = get_rate(currency_from, currency_to)
 
-    return render_template("home.html", articles=articles, weather=weather, currency_from=currency_from, currency_to=currency_to, rate=rate)
+    return render_template("home.html", articles=articles, weather=weather, currency_from=currency_from, currency_to=currency_to, rate=rate, currencies=sorted(currencies))
 
 @app.route("/", methods=['GET', 'POST'])
 def get_news():
@@ -63,6 +63,7 @@ def get_news():
     weather = get_weather("London,UK")
 
     return render_template("home.html", articles=feed['entries'], weather=weather)
+
 
 def get_news(query):
     if not query or query.lower() in RSS_FEEDS:
@@ -97,7 +98,7 @@ def get_rate(frm, to):
     all_currency = requests.get(keys.CURRENCY_URL).json()['rates']
     frm_rate = all_currency[frm.upper()]
     to_rate = all_currency[to.upper()]
-    return to_rate / frm_rate
+    return (to_rate / frm_rate, all_currency.keys())
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True)
