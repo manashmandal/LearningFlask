@@ -10,6 +10,10 @@ import json
 
 app = Flask(__name__)
 
+DEFAULTS = {
+    'publication' : 'bbc',
+    'city' : 'London,UK'
+}
 
 RSS_FEEDS = {
     'bbc' : 'http://feeds.bbci.co.uk/news/rss.xml',
@@ -18,6 +22,20 @@ RSS_FEEDS = {
     'iol' : 'http://www.iol.co.za/cmlink/1.640'
 }
 
+@app.route("/")
+def home():
+    publication = request.args.get('publication')
+    if not publication:
+        publication = DEFAULTS['publication']
+    articles = get_news(publication)
+
+    city = request.args.get('city')
+    if not city:
+        city = DEFAULTS['city']
+
+    weather = get_weather(city)
+
+    return render_template("home.html", articles=articles, weather=weather)
 
 @app.route("/", methods=['GET', 'POST'])
 def get_news():
@@ -31,6 +49,16 @@ def get_news():
     weather = get_weather("London,UK")
 
     return render_template("home.html", articles=feed['entries'], weather=weather)
+
+def get_news(query):
+    if not query or query.lower() in RSS_FEEDS:
+        publication = DEFAULTS['publication']
+    else:
+        publication = query.lower()
+
+    feed = feedparser.parse(RSS_FEEDS[publication])
+    
+    return feed['entries']
 
 
 def get_weather(query):

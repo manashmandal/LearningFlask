@@ -15,6 +15,11 @@
             <input type="text" name="publication" placeholder="search" />
             <input type="submit" value="Submit">
         </form>
+
+        <form>
+            <input type="text" name="city" placeholder="weather search">
+            <input type="submit" value="Submit">
+        </form>
         {% for article in articles %}
             <b><a href="{{article.link}}">{{article.title}}</a> </b> <br/>
             <i>{{article.published}}</i> <br/>
