@@ -10,19 +10,6 @@
             <p>{{weather.description}} | {{weather.temperature}} &#8451;</p>
 
         <h2>Currency</h2>
-        1 {{currency_from}} = {{currency_to}} {{rate}}
-
-        <h2>Headlines</h2>
-
-        <form action="/" method="POST">
-            <input type="text" name="publication" placeholder="search" />
-            <input type="submit" value="Submit">
-        </form>
-
-        <form>
-            <input type="text" name="city" placeholder="weather search">
-            <input type="submit" value="Submit">
-        </form>
 
         <!--Currency-->
 
@@ -39,6 +26,22 @@
                         <option value="EUR">EUR</option>
                     </select>
         </form>
+
+        1 {{currency_from}} = {{currency_to}} {{rate}}
+
+        <h2>Headlines</h2>
+
+        <form action="/" method="POST">
+            <input type="text" name="publication" placeholder="search" />
+            <input type="submit" value="Submit">
+        </form>
+
+        <form>
+            <input type="text" name="city" placeholder="weather search">
+            <input type="submit" value="Submit">
+        </form>
+
+
 
         {% for article in articles %}
             <b><a href="{{article.link}}">{{article.title}}</a> </b> <br/>
