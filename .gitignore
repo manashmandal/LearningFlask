@@ -91,3 +91,6 @@ ENV/
 
 # Avoid uploading PyCharm Files
 /.idea
+
+# Avoid Uploading the config file
+/_credentials_
